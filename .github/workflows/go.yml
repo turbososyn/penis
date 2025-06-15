@@ -1,25 +1,25 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+name: Docker Image CI
 
-name: Go
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+on: [push]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-    - name: Build Docker image and run unit tests
-      run: docker-compose build
-    - name: Running integration test
-      run: |
-        docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up --exit-code-from test
+      - uses: actions/checkout@v2
+      
+      - name: Build docker images
+        run: docker compose build 
+
+      - name: Run services
+        run: docker compose up -d 
+        
+      - name: Show running services
+        run: docker ps
+        
+      - name: Run tests
+        run: go test ./...
+        
+      - name: Stop services
+        if: always() 
+        run: docker compose down 
