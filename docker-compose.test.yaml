@@ -1,0 +1,19 @@
+version: '2.1'
+
+services:
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+      args:
+        BUILDPLATFORM: linux/amd64
+    networks:
+      - servers
+    depends_on:
+      - server1
+      - server2
+      - server3
+      - balancer
+
+  balancer:
+    command: ["lb", "--trace=true"]
